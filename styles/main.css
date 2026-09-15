@@ -73,6 +73,13 @@ output { min-width: 2ch; text-align: right; color: var(--muted); }
 .toast { background: var(--panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 14px; animation: fade 3s forwards; }
 @keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
 .nojs { position: fixed; inset: 0; display: grid; place-items: center; color: var(--fg); }
+.home-link {
+   position: fixed; top: 12px; right: 12px; z-index: 10;
+   background: var(--panel); color: var(--fg); text-decoration: none;
+   border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+   padding: 6px 12px; font-size: 13px; backdrop-filter: blur(8px);
+}
+.home-link:hover { background: #313949; }
 @media (max-width: 720px) {
   #hud { min-width: 0; max-width: calc(100% - 24px); }
   label { grid-template-columns: 70px 1fr auto; }
