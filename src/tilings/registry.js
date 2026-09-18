@@ -11,8 +11,17 @@ import cairo from './cairo.js';
 import brick from './brick.js';
 
 export const tilingList = [
-  triangle, hex, square, truncSquare, triHex,
-  rhombiTriHex, snubSquare, truncHex, truncTriHex, cairo, brick,
+  triangle,
+  hex,
+  square,
+  truncSquare,
+  triHex,
+  rhombiTriHex,
+  snubSquare,
+  truncHex,
+  truncTriHex,
+  cairo,
+  brick,
 ];
-export const tilings = Object.fromEntries(tilingList.map(t => [t.id, t]));
-export const tilingIds = tilingList.map(t => t.id);
+export const tilings = Object.fromEntries(tilingList.map((t) => [t.id, t]));
+export const tilingIds = tilingList.map((t) => t.id);

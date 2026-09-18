@@ -8,8 +8,8 @@
 export const INF = 0x3fffffff;
 
 export function extendedAdjacency(board, crossingMode) {
-  if (crossingMode === 'strict') return board.cells.map(c => c.neighbors);
-  return board.cells.map(c => {
+  if (crossingMode === 'strict') return board.cells.map((c) => c.neighbors);
+  return board.cells.map((c) => {
     const set = new Set(c.neighbors);
     for (const id of c.chords) {
       const ch = board.chords[id];
@@ -26,7 +26,8 @@ export class Evaluator {
     this.n = board.cells.length;
     this.adj = extendedAdjacency(board, crossingMode);
     this.arcs = Array.from({ length: players }, (_, p) =>
-      board.arcs.filter(a => a.owner === p).map(a => a.cells));
+      board.arcs.filter((a) => a.owner === p).map((a) => a.cells)
+    );
     this.DA = new Int32Array(this.n);
     this.DB = new Int32Array(this.n);
   }
@@ -35,7 +36,12 @@ export class Evaluator {
   _dijkstra(owner, player, sources, D) {
     D.fill(INF);
     const buckets = [];
-    const push = (id, d) => { if (d < D[id]) { D[id] = d; (buckets[d] ??= []).push(id); } };
+    const push = (id, d) => {
+      if (d < D[id]) {
+        D[id] = d;
+        (buckets[d] ??= []).push(id);
+      }
+    };
     for (const id of sources) {
       const o = owner[id];
       if (o === -1 || o === player) push(id, o === player ? 0 : 1);

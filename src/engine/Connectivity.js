@@ -8,7 +8,9 @@ export class Connectivity {
     this.sets = Array.from({ length: players }, () => new DisjointSet(this.n + board.arcs.length));
   }
 
-  sentinel(arcId) { return this.n + arcId; }
+  sentinel(arcId) {
+    return this.n + arcId;
+  }
 
   /** `unions` are extra (chord) links already resolved by the crossing rule. */
   claim(cell, player, owner, unions = []) {
@@ -18,7 +20,9 @@ export class Connectivity {
     for (const arc of this.board.cells[cell].arcs) ds.union(cell, this.sentinel(arc));
   }
 
-  same(player, x, y) { return this.sets[player].same(x, y); }
+  same(player, x, y) {
+    return this.sets[player].same(x, y);
+  }
 
   /** All cells of `player` in the same component as border arc `arcId`. */
   chain(player, arcId, owner) {

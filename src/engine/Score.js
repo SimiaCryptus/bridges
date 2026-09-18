@@ -4,12 +4,17 @@
  * adjacency graph; works for any tiling.
  */
 export function connectionDistance(board, owner, player) {
-  const arcs = board.arcs.filter(a => a.owner === player);
+  const arcs = board.arcs.filter((a) => a.owner === player);
   if (arcs.length < 2) return Infinity;
   const n = board.cells.length;
   const D = new Int32Array(n).fill(0x3fffffff);
   const buckets = [];
-  const push = (id, d) => { if (d < D[id]) { D[id] = d; (buckets[d] ??= []).push(id); } };
+  const push = (id, d) => {
+    if (d < D[id]) {
+      D[id] = d;
+      (buckets[d] ??= []).push(id);
+    }
+  };
   const target = new Set(arcs[1].cells);
   for (const id of arcs[0].cells) {
     const o = owner[id];

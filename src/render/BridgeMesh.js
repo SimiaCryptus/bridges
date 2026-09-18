@@ -8,24 +8,39 @@ export class BridgeMesh extends THREE.Group {
     this.boardScale = board.scale;
     this.board = board;
     this.height = height;
-    this.mats = theme.players.map(c => new THREE.MeshStandardMaterial({
-      color: new THREE.Color(c), roughness: 0.35, metalness: 0.55,
-    }));
+    this.mats = theme.players.map(
+      (c) =>
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(c),
+          roughness: 0.35,
+          metalness: 0.55,
+        })
+    );
     this.cutMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0c, roughness: 1 });
   }
 
   addBridge(b) {
     const ch = this.board.chords[b.over];
     if (!ch) return;
-    const A = this.board.cells[ch.a].centroid, B = this.board.cells[ch.b].centroid;
+    const A = this.board.cells[ch.a].centroid,
+      B = this.board.cells[ch.b].centroid;
     const V = this.board.vertices[ch.vertexId].p;
-    const h = this.height, s = this.boardScale;
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(A[0], h * 0.9, -A[1]),
-      new THREE.Vector3(V[0], h + 0.4 * s, -V[1]),
-      new THREE.Vector3(B[0], h * 0.9, -B[1]),
-    ], false, 'catmullrom', 0.5);
-    const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.07 * s, 8, false), this.mats[b.owner] ?? this.mats[0]);
+    const h = this.height,
+      s = this.boardScale;
+    const curve = new THREE.CatmullRomCurve3(
+      [
+        new THREE.Vector3(A[0], h * 0.9, -A[1]),
+        new THREE.Vector3(V[0], h + 0.4 * s, -V[1]),
+        new THREE.Vector3(B[0], h * 0.9, -B[1]),
+      ],
+      false,
+      'catmullrom',
+      0.5
+    );
+    const arch = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 16, 0.07 * s, 8, false),
+      this.mats[b.owner] ?? this.mats[0]
+    );
     arch.userData = b;
     this.add(arch);
     // severance decal: a dark disc under the arch marks the cut path

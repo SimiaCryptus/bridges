@@ -6,16 +6,22 @@ export class DisjointSet {
   }
   find(x) {
     const p = this.parent;
-    while (p[x] !== x) { p[x] = p[p[x]]; x = p[x]; }
+    while (p[x] !== x) {
+      p[x] = p[p[x]];
+      x = p[x];
+    }
     return x;
   }
   union(a, b) {
-    let ra = this.find(a), rb = this.find(b);
+    let ra = this.find(a),
+      rb = this.find(b);
     if (ra === rb) return ra;
     if (this.size[ra] < this.size[rb]) [ra, rb] = [rb, ra];
     this.parent[rb] = ra;
     this.size[ra] += this.size[rb];
     return ra;
   }
-  same(a, b) { return this.find(a) === this.find(b); }
+  same(a, b) {
+    return this.find(a) === this.find(b);
+  }
 }

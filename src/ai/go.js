@@ -27,23 +27,29 @@ function heuristic(go, cell, me) {
   const { board, owner } = go;
   let s = 0;
   s += go.capturesAt(cell, me).length * 12;
-  let empties = 0, ownLibs = 0, contact = 0;
+  let empties = 0,
+    ownLibs = 0,
+    contact = 0;
   for (const nb of board.cells[cell].neighbors) {
     const o = owner[nb];
-    if (o === -1) { empties++; continue; }
+    if (o === -1) {
+      empties++;
+      continue;
+    }
     contact++;
     const libs = go.group(nb);
     if (o === me) {
-      ownLibs += libs - 1;                                 // liberties the merged group keeps
-      if (libs === 1) s += 6 + 2 * go.members.length;      // rescues a group in atari
+      ownLibs += libs - 1; // liberties the merged group keeps
+      if (libs === 1) s += 6 + 2 * go.members.length; // rescues a group in atari
     } else if (libs === 2) {
-      s += 4;                                              // puts an enemy group in atari
+      s += 4; // puts an enemy group in atari
     }
   }
-  const after = empties + ownLibs;                         // rough liberty count afterwards
-  if (after <= 1 && s < 12) s -= 15;                       // self-atari without a capture
+  const after = empties + ownLibs; // rough liberty count afterwards
+  if (after <= 1 && s < 12)
+    s -= 15; // self-atari without a capture
   else if (after === 2) s -= 2;
-  s += Math.min(contact, 2) * 1.5;                         // stay in touch with the fight
+  s += Math.min(contact, 2) * 1.5; // stay in touch with the fight
   const b = board.bbox;
   const R = Math.max(b.maxX - b.minX, b.maxY - b.minY) / 2 || 1;
   const c = board.cells[cell].centroid;
@@ -75,7 +81,8 @@ export function playout(sim, me, rand, maxPlies) {
 
 /** Returns a cell id or `PASS`. */
 export function chooseGoMove(game, { level = 'medium', budgetMs = 300, rand = Math.random } = {}) {
-  const go = game.go, me = game.turn;
+  const go = game.go,
+    me = game.turn;
   const cands = [];
   for (let c = 0; c < go.n; c++) {
     if (go.owner[c] === -1 && !isEye(go, c, me) && go.isLegal(c, me)) cands.push(c);
@@ -83,19 +90,20 @@ export function chooseGoMove(game, { level = 'medium', budgetMs = 300, rand = Ma
   if (!cands.length) return PASS;
 
   if (level === 'easy') {
-    const caps = cands.filter(c => go.capturesAt(c, me).length);
+    const caps = cands.filter((c) => go.capturesAt(c, me).length);
     if (caps.length && rand() < 0.8) return pick(caps, rand);
     return pick(cands, rand);
   }
 
-  const scored = cands.map(c => ({ c, s: heuristic(go, c, me) + rand() * 0.5, w: 0, n: 0 }));
+  const scored = cands.map((c) => ({ c, s: heuristic(go, c, me) + rand() * 0.5, w: 0, n: 0 }));
   scored.sort((a, b) => b.s - a.s);
   if (level !== 'hard' || budgetMs <= 0) return scored[0].c;
 
   // hard: flat Monte Carlo over the shortlist, heuristic rank as a prior
   const K = Math.min(scored.length, SHORTLIST);
   const short = scored.slice(0, K);
-  const sMin = short[K - 1].s, sMax = short[0].s;
+  const sMin = short[K - 1].s,
+    sMax = short[0].s;
   const sim = new GoState(go.board, go.players);
   const maxPlies = go.plies + 3 * go.n;
   const deadline = now() + budgetMs;
@@ -106,11 +114,15 @@ export function chooseGoMove(game, { level = 'medium', budgetMs = 300, rand = Ma
     cand.w += playout(sim, me, rand, maxPlies);
     cand.n++;
   }
-  let best = short[0], bestV = -Infinity;
+  let best = short[0],
+    bestV = -Infinity;
   for (const cand of short) {
     const prior = sMax > sMin ? (cand.s - sMin) / (sMax - sMin) : 0.5;
     const v = (cand.w + 2 * prior) / (cand.n + 2);
-    if (v > bestV) { bestV = v; best = cand; }
+    if (v > bestV) {
+      bestV = v;
+      best = cand;
+    }
   }
   return best.c;
 }

@@ -13,11 +13,16 @@ export class LinkMesh extends THREE.Group {
     this.boardScale = board.scale;
     this.height = height;
     this.radius = 0.07 * board.scale;
-    this.y = height * 1.35;            // flush with the raised top of a claimed cell
+    this.y = height * 1.35; // flush with the raised top of a claimed cell
     this.geo = new THREE.CylinderGeometry(this.radius, this.radius, 1, 10);
-    this.mats = theme.players.map(c => new THREE.MeshStandardMaterial({
-      color: new THREE.Color(c), roughness: 0.3, metalness: 0.5,
-    }));
+    this.mats = theme.players.map(
+      (c) =>
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(c),
+          roughness: 0.3,
+          metalness: 0.5,
+        })
+    );
     this.keys = new Set();
     this._up = new THREE.Vector3(0, 1, 0);
     this._dir = new THREE.Vector3();
@@ -26,10 +31,12 @@ export class LinkMesh extends THREE.Group {
   addLink(a, b, owner) {
     const key = a < b ? `${a},${b}` : `${b},${a}`;
     if (this.keys.has(key)) return;
-    const A = this.board.cells[a]?.centroid, B = this.board.cells[b]?.centroid;
+    const A = this.board.cells[a]?.centroid,
+      B = this.board.cells[b]?.centroid;
     if (!A || !B) return;
     this.keys.add(key);
-    const dx = B[0] - A[0], dz = -(B[1] - A[1]);
+    const dx = B[0] - A[0],
+      dz = -(B[1] - A[1]);
     const len = Math.hypot(dx, dz) || 1e-6;
     const mesh = new THREE.Mesh(this.geo, this.mats[owner] ?? this.mats[0]);
     mesh.position.set((A[0] + B[0]) / 2, this.y, -(A[1] + B[1]) / 2);
@@ -39,7 +46,10 @@ export class LinkMesh extends THREE.Group {
     this.add(mesh);
   }
 
-  reset() { this.clear(); this.keys.clear(); }
+  reset() {
+    this.clear();
+    this.keys.clear();
+  }
 
   sync(links) {
     this.reset();

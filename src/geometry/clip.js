@@ -11,13 +11,16 @@ function intersect(p, q, a, b) {
 export function clipPolygon(subject, clip) {
   let out = subject;
   for (let i = 0; i < clip.length && out.length; i++) {
-    const a = clip[i], b = clip[(i + 1) % clip.length];
-    const inside = p => cross(sub(b, a), sub(p, a)) >= -1e-9;
+    const a = clip[i],
+      b = clip[(i + 1) % clip.length];
+    const inside = (p) => cross(sub(b, a), sub(p, a)) >= -1e-9;
     const inp = out;
     out = [];
     for (let j = 0; j < inp.length; j++) {
-      const cur = inp[j], prev = inp[(j + inp.length - 1) % inp.length];
-      const ci = inside(cur), pi = inside(prev);
+      const cur = inp[j],
+        prev = inp[(j + inp.length - 1) % inp.length];
+      const ci = inside(cur),
+        pi = inside(prev);
       if (ci) {
         if (!pi) out.push(intersect(prev, cur, a, b));
         out.push(cur);

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const isTyping = e => ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target?.tagName);
+const isTyping = (e) => ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target?.tagName);
 
 /**
  * Damped orbit / pan / dolly rig for a board lying in the y = 0 plane.
@@ -29,7 +29,9 @@ export class CameraRig {
     this.home = null;
 
     this.target = new THREE.Vector3();
-    this.dist = 10; this.theta = 0; this.phi = 0.66;
+    this.dist = 10;
+    this.theta = 0;
+    this.phi = 0.66;
     this.goal = { target: new THREE.Vector3(), dist: 10, theta: 0, phi: 0.66 };
 
     this._pointers = new Map();
@@ -48,17 +50,29 @@ export class CameraRig {
   fit(center, radius) {
     this.minDist = radius * 0.35;
     this.maxDist = radius * 8;
-    this.bounds = { x0: center.x - radius, x1: center.x + radius, z0: center.z - radius, z1: center.z + radius };
+    this.bounds = {
+      x0: center.x - radius,
+      x1: center.x + radius,
+      z0: center.z - radius,
+      z1: center.z + radius,
+    };
     this.home = { target: center.clone(), dist: radius * 2.8, theta: 0, phi: 0.66 };
     this.reset(true);
   }
 
   reset(snap = false) {
     if (!this.home) return;
-    const g = this.goal, h = this.home;
-    g.target.copy(h.target); g.dist = h.dist; g.theta = h.theta; g.phi = h.phi;
+    const g = this.goal,
+      h = this.home;
+    g.target.copy(h.target);
+    g.dist = h.dist;
+    g.theta = h.theta;
+    g.phi = h.phi;
     if (snap) {
-      this.target.copy(h.target); this.dist = h.dist; this.theta = h.theta; this.phi = h.phi;
+      this.target.copy(h.target);
+      this.dist = h.dist;
+      this.theta = h.theta;
+      this.phi = h.phi;
       this._apply();
     }
   }
@@ -100,7 +114,8 @@ export class CameraRig {
   /** Keyboard pan in screen directions (fx right, fz forward), as a fraction of the view. */
   panScreen(fx, fz) {
     const step = this.dist * 0.15;
-    const s = Math.sin(this.theta), c = Math.cos(this.theta);
+    const s = Math.sin(this.theta),
+      c = Math.cos(this.theta);
     this.goal.target.x += (-s * fz + c * fx) * step;
     this.goal.target.z += (-c * fz - s * fx) * step;
     this._clampTarget(this.goal.target);
@@ -130,11 +145,12 @@ export class CameraRig {
   }
 
   _apply() {
-    const s = Math.sin(this.phi), t = this.target;
+    const s = Math.sin(this.phi),
+      t = this.target;
     this.camera.position.set(
       t.x + this.dist * s * Math.sin(this.theta),
       t.y + this.dist * Math.cos(this.phi),
-      t.z + this.dist * s * Math.cos(this.theta),
+      t.z + this.dist * s * Math.cos(this.theta)
     );
     this.camera.lookAt(t);
   }
@@ -146,18 +162,18 @@ export class CameraRig {
 
   _bind() {
     const d = this.dom;
-    d.addEventListener('contextmenu', e => e.preventDefault());
-    d.addEventListener('pointerdown', e => {
+    d.addEventListener('contextmenu', (e) => e.preventDefault());
+    d.addEventListener('pointerdown', (e) => {
       if (!this.enabled) return;
       this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (this._pointers.size === 1) {
-        this._mode = (e.button === 2 || e.button === 1 || e.shiftKey || e.ctrlKey) ? 'pan' : 'orbit';
+        this._mode = e.button === 2 || e.button === 1 || e.shiftKey || e.ctrlKey ? 'pan' : 'orbit';
       } else if (this._pointers.size === 2) {
         this._mode = 'pinch';
         this._pinch = this._pinchDist();
       }
     });
-    d.addEventListener('pointermove', e => {
+    d.addEventListener('pointermove', (e) => {
       const p = this._pointers.get(e.pointerId);
       if (!p || !this.enabled) return;
       if (this._mode === 'orbit') {
@@ -165,45 +181,73 @@ export class CameraRig {
       } else if (this._mode === 'pan') {
         this.panBy(p.x, p.y, e.clientX, e.clientY);
       } else if (this._mode === 'pinch' && this._pointers.size === 2) {
-        const q = [...this._pointers.values()].find(v => v !== p);
-        const cx0 = (p.x + q.x) / 2, cy0 = (p.y + q.y) / 2;
-        p.x = e.clientX; p.y = e.clientY;
-        const cx1 = (p.x + q.x) / 2, cy1 = (p.y + q.y) / 2;
+        const q = [...this._pointers.values()].find((v) => v !== p);
+        const cx0 = (p.x + q.x) / 2,
+          cy0 = (p.y + q.y) / 2;
+        p.x = e.clientX;
+        p.y = e.clientY;
+        const cx1 = (p.x + q.x) / 2,
+          cy1 = (p.y + q.y) / 2;
         this.panBy(cx0, cy0, cx1, cy1);
         const dist = this._pinchDist();
         if (this._pinch > 0 && dist > 0) this.dolly(this._pinch / dist, cx1, cy1);
         this._pinch = dist;
         return;
       }
-      p.x = e.clientX; p.y = e.clientY;
+      p.x = e.clientX;
+      p.y = e.clientY;
     });
-    const up = e => {
+    const up = (e) => {
       this._pointers.delete(e.pointerId);
       if (this._pointers.size === 0) this._mode = null;
       else if (this._pointers.size === 1) this._mode = 'orbit';
     };
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
-    d.addEventListener('wheel', e => {
-      if (!this.enabled) return;
-      e.preventDefault();
-      // normalise line/page deltas to pixels, then clamp so one notch is one small step
-      const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
-      this.dolly(Math.exp(clamp(dy, -120, 120) * 0.0018), e.clientX, e.clientY);
-    }, { passive: false });
-    window.addEventListener('keydown', e => {
+    d.addEventListener(
+      'wheel',
+      (e) => {
+        if (!this.enabled) return;
+        e.preventDefault();
+        // normalise line/page deltas to pixels, then clamp so one notch is one small step
+        const dy =
+          e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+        this.dolly(Math.exp(clamp(dy, -120, 120) * 0.0018), e.clientX, e.clientY);
+      },
+      { passive: false }
+    );
+    window.addEventListener('keydown', (e) => {
       if (!this.enabled || isTyping(e) || e.altKey || e.metaKey || e.ctrlKey) return;
       if (document.querySelector('dialog[open]')) return;
       switch (e.key) {
-        case 'ArrowUp': this.panScreen(0, 1); break;
-        case 'ArrowDown': this.panScreen(0, -1); break;
-        case 'ArrowLeft': this.panScreen(-1, 0); break;
-        case 'ArrowRight': this.panScreen(1, 0); break;
-        case '+': case '=': this.dolly(0.8); break;
-        case '-': case '_': this.dolly(1.25); break;
-        case 'r': this.reset(); break;
-        case 't': this.toggleTopDown(); break;
-        default: return;
+        case 'ArrowUp':
+          this.panScreen(0, 1);
+          break;
+        case 'ArrowDown':
+          this.panScreen(0, -1);
+          break;
+        case 'ArrowLeft':
+          this.panScreen(-1, 0);
+          break;
+        case 'ArrowRight':
+          this.panScreen(1, 0);
+          break;
+        case '+':
+        case '=':
+          this.dolly(0.8);
+          break;
+        case '-':
+        case '_':
+          this.dolly(1.25);
+          break;
+        case 'r':
+          this.reset();
+          break;
+        case 't':
+          this.toggleTopDown();
+          break;
+        default:
+          return;
       }
       e.preventDefault();
     });

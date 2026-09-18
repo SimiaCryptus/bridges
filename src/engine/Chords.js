@@ -16,10 +16,13 @@ export class ChordState {
     this.birth = new Int32Array(board.chords.length).fill(-1);
   }
 
-  isLive(id) { return this.live[id] === 1; }
+  isLive(id) {
+    return this.live[id] === 1;
+  }
 
   activate(cell, player, moveNumber, owner) {
-    const unions = [], severed = [];
+    const unions = [],
+      severed = [];
     if (this.mode === 'strict') return { unions, severed };
     const chords = this.board.chords;
     for (const id of this.board.cells[cell].chords) {

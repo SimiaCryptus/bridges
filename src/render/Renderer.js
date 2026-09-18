@@ -9,9 +9,19 @@ import { THEMES } from './Themes.js';
 export class Renderer {
   constructor(canvas, display = {}) {
     this.canvas = canvas;
-    this.display = { theme: 'slate', borders: 'anchored', links: true, animations: true, ...display };
+    this.display = {
+      theme: 'slate',
+      borders: 'anchored',
+      links: true,
+      animations: true,
+      ...display,
+    };
     this.theme = THEMES[this.display.theme] ?? THEMES.slate;
-    this.gl = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    this.gl = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance',
+    });
     this.gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.gl.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -26,7 +36,7 @@ export class Renderer {
 
     this.table = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1),
-      new THREE.MeshStandardMaterial({ color: this.theme.table, roughness: 0.95 }),
+      new THREE.MeshStandardMaterial({ color: this.theme.table, roughness: 0.95 })
     );
     this.table.rotation.x = -Math.PI / 2;
     this.table.position.y = -0.01;
@@ -53,14 +63,21 @@ export class Renderer {
     requestAnimationFrame(this._loop);
   }
 
-  now() { return this.clock.getElapsedTime(); }
+  now() {
+    return this.clock.getElapsedTime();
+  }
 
   /** Animations are a display setting, but `prefers-reduced-motion` always wins. */
-  get animate() { return this.display.animations !== false && !this.reducedMotion; }
+  get animate() {
+    return this.display.animations !== false && !this.reducedMotion;
+  }
 
   setBoard(board, fit = true) {
     this.board = board;
-    if (this.boardMesh) { this.boardMesh.geometry.dispose(); this.boardMesh.material.dispose(); }
+    if (this.boardMesh) {
+      this.boardMesh.geometry.dispose();
+      this.boardMesh.material.dispose();
+    }
     if (this.bridges) this.bridges.reset();
     if (this.links) this.links.dispose();
     if (this.frame) for (const m of this.frame.children) m.geometry.dispose();
@@ -115,13 +132,13 @@ export class Renderer {
     // without animations the claim lands already settled (claim time long past)
     this.boardMesh.setCell(result.cell, result.player, this.animate ? t : -100);
     if (this.animate) this.boardMesh.setLastClaim(this.board.cells[result.cell].centroid, t);
-     if (result.captured?.length) {
-       // Go: captured stones sink back to unclaimed and take their link bars with them
-       for (const c of result.captured) this.boardMesh.setCell(c, -1, -100);
-       this.links.sync(game.links());
-     } else {
-       for (const [a, b, o] of result.links ?? []) this.links.addLink(a, b, o);
-     }
+    if (result.captured?.length) {
+      // Go: captured stones sink back to unclaimed and take their link bars with them
+      for (const c of result.captured) this.boardMesh.setCell(c, -1, -100);
+      this.links.sync(game.links());
+    } else {
+      for (const [a, b, o] of result.links ?? []) this.links.addLink(a, b, o);
+    }
     for (const b of result.bridges) this.bridges.addBridge(b);
     // a single claim can re-anchor a whole group, so repaint every border
     this.boardMesh.setConnections(game.connectionCounts());
@@ -145,23 +162,34 @@ export class Renderer {
     this.onHover?.(id);
   }
 
-  resetView() { this.rig.reset(); }
-  toggleTopDown() { this.rig.toggleTopDown(); }
+  resetView() {
+    this.rig.reset();
+  }
+  toggleTopDown() {
+    this.rig.toggleTopDown();
+  }
 
   _buildFrame(board) {
     const group = new THREE.Group();
-    const s = board.scale, h = this.boardMesh.height * 0.9, thick = 0.3 * s;
-     const neutral = board.meta?.goal === 'go'; // nobody owns a side in Go
+    const s = board.scale,
+      h = this.boardMesh.height * 0.9,
+      thick = 0.3 * s;
+    const neutral = board.meta?.goal === 'go'; // nobody owns a side in Go
     for (const side of board.sides) {
       const arc = board.arcs[side.id];
-       const col = new THREE.Color(neutral ? this.theme.rail : (this.theme.players[arc.owner] ?? '#888888'))
-         .multiplyScalar(neutral ? 1 : 0.8);
-      const dx = side.b[0] - side.a[0], dy = side.b[1] - side.a[1];
+      const col = new THREE.Color(
+        neutral ? this.theme.rail : (this.theme.players[arc.owner] ?? '#888888')
+      ).multiplyScalar(neutral ? 1 : 0.8);
+      const dx = side.b[0] - side.a[0],
+        dy = side.b[1] - side.a[1];
       const len = Math.hypot(dx, dy);
       const geo = new THREE.BoxGeometry(len + thick, h, thick);
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, metalness: 0.3 }));
-      const mx = (side.a[0] + side.b[0]) / 2 + side.normal[0] * thick / 2;
-      const my = (side.a[1] + side.b[1]) / 2 + side.normal[1] * thick / 2;
+      const mesh = new THREE.Mesh(
+        geo,
+        new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, metalness: 0.3 })
+      );
+      const mx = (side.a[0] + side.b[0]) / 2 + (side.normal[0] * thick) / 2;
+      const my = (side.a[1] + side.b[1]) / 2 + (side.normal[1] * thick) / 2;
       mesh.position.set(mx, h / 2, -my);
       mesh.rotation.y = Math.atan2(dy, dx);
       group.add(mesh);
@@ -171,7 +199,8 @@ export class Renderer {
 
   _fitCamera(board) {
     const b = board.bbox;
-    const cx = (b.minX + b.maxX) / 2, cy = (b.minY + b.maxY) / 2;
+    const cx = (b.minX + b.maxX) / 2,
+      cy = (b.minY + b.maxY) / 2;
     const R = Math.max(b.maxX - b.minX, b.maxY - b.minY) / 2 + board.scale;
     this.rig.fit(new THREE.Vector3(cx, 0, -cy), R);
     this.table.scale.set(R * 12, R * 12, 1);
@@ -180,23 +209,26 @@ export class Renderer {
 
   _bindEvents() {
     let down = null;
-    this.canvas.addEventListener('pointerdown', e => {
+    this.canvas.addEventListener('pointerdown', (e) => {
       // only a plain left press can become a claim; other buttons / modifiers pan
       down = e.button === 0 && !e.shiftKey && !e.ctrlKey ? [e.clientX, e.clientY] : null;
     });
-    this.canvas.addEventListener('pointerup', e => {
+    this.canvas.addEventListener('pointerup', (e) => {
       if (!down) return;
       const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
       down = null;
       if (moved < 6) this.onPick?.(this.pick(e.clientX, e.clientY));
     });
-    this.canvas.addEventListener('pointermove', e => this.setHover(this.pick(e.clientX, e.clientY)));
+    this.canvas.addEventListener('pointermove', (e) =>
+      this.setHover(this.pick(e.clientX, e.clientY))
+    );
     this.canvas.addEventListener('pointerleave', () => this.setHover(-1));
     window.addEventListener('resize', () => this._resize());
   }
 
   _resize() {
-    const w = window.innerWidth, h = window.innerHeight;
+    const w = window.innerWidth,
+      h = window.innerHeight;
     this.gl.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();

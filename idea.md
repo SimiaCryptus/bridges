@@ -1,6 +1,6 @@
 # Bridges
 
-> **Bridges** is a generalization of *Hex* onto arbitrary, configurable tilings
+> **Bridges** is a generalization of _Hex_ onto arbitrary, configurable tilings
 > (tessellations) of the plane, with 2‑player and 3‑player modes.
 > Claim cells, grow a connected chain, link the two (or three) sides of the board
 > that belong to you — and cut your opponents off before they do the same.
@@ -14,14 +14,14 @@ Hex is a perfect game: trivially simple rules, no draws, a first‑player win by
 strategy‑stealing, and deep, subtle play. But Hex is welded to one board: a
 rhombus of hexagons.
 
-**Bridges** asks: *what is Hex, actually?*
+**Bridges** asks: _what is Hex, actually?_
 
 The answer: Hex is a **connection game on the faces of a planar tiling**, where
 each player owns a pair of opposite boundary arcs. Nothing about that definition
 requires hexagons. So Bridges makes the tiling a **parameter**:
 
 - hexagons (classic Hex),
-- squares (needs a crossing rule — hence *bridges*),
+- squares (needs a crossing rule — hence _bridges_),
 - triangles, truncated squares (4.8.8), kagome (3.6.3.6), snub square,
   Cairo pentagons, brick offsets, dual/Laves tilings, and organic
   (Voronoi‑relaxed) boards,
@@ -37,14 +37,14 @@ it depends on the **macro shape of the board**, and the tiling is free.
 
 Three reasons, all load‑bearing:
 
-1. **Heritage.** Gale's *Bridg‑It* (the Shannon switching game) is Hex's cousin,
+1. **Heritage.** Gale's _Bridg‑It_ (the Shannon switching game) is Hex's cousin,
    played by drawing bridges between dots — with the rule that bridges may not
    cross.
 2. **Mechanics.** On tilings whose vertices touch four or more tiles, two
-   diagonal connections *want to cross*. Bridges resolves this by letting the
+   diagonal connections _want to cross_. Bridges resolves this by letting the
    earlier claim **bridge over** the later one. Crossings are literal overpasses.
 3. **Strategy.** In Hex, a "bridge" is the fundamental motif: two stones sharing
-   two empty cells are *virtually connected*. Bridges are the atoms of good play.
+   two empty cells are _virtually connected_. Bridges are the atoms of good play.
 
 ---
 
@@ -53,8 +53,8 @@ Three reasons, all load‑bearing:
 ### 2.1 Core rules (all modes)
 
 1. **Board.** A finite region of the plane, cut from a tiling. Each tile is a
-   **cell**. Two cells are **adjacent** if they share an *edge* (positive‑length
-   boundary segment). Sharing only a *vertex* is not adjacency (see §2.3).
+   **cell**. Two cells are **adjacent** if they share an _edge_ (positive‑length
+   boundary segment). Sharing only a _vertex_ is not adjacency (see §2.3).
 2. **Sides.** The board outline is a convex polygon with `S` sides. Each side is a
    **border arc**. A cell touching a border arc is a **border cell** of that arc.
    A cell in a corner touches two arcs and belongs to both (as in Hex).
@@ -70,7 +70,7 @@ Three reasons, all load‑bearing:
    unless a tiebreak variant is enabled.
 
 With `tiling = hex`, `outline = rhombus`, `players = 2`, these rules are
-*exactly* Hex. That is the conformance test.
+_exactly_ Hex. That is the conformance test.
 
 ### 2.2 The no‑draw property, and when it holds
 
@@ -81,10 +81,10 @@ encounters an ambiguous four‑way pinch.
 
 Bridges classifies every tiling:
 
-| Class | Condition | Consequence |
-|---|---|---|
-| **Clean** | every interior vertex has degree 3 | 2‑player games can never be drawn; strategy‑stealing gives first player a theoretical win |
-| **Pinched** | some vertex has degree ≥ 4 | diagonal contacts are ambiguous; needs a crossing rule (§2.3) |
+| Class       | Condition                          | Consequence                                                                               |
+| ----------- | ---------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Clean**   | every interior vertex has degree 3 | 2‑player games can never be drawn; strategy‑stealing gives first player a theoretical win |
+| **Pinched** | some vertex has degree ≥ 4         | diagonal contacts are ambiguous; needs a crossing rule (§2.3)                             |
 
 Clean tilings include: hexagonal (6.6.6), truncated square (4.8.8),
 truncated hexagonal (3.12.12), truncated trihexagonal (4.6.12), brick/soldier
@@ -99,22 +99,22 @@ The UI shows the class as a badge, because it changes the game's character.
 
 At a vertex `v` of degree `d ≥ 4`, list the incident cells in cyclic order
 `c0, c1, …, c(d-1)`. Consecutive cells share an edge and are already adjacent.
-Non‑consecutive pairs are **chords**: potential *diagonal* connections through the
+Non‑consecutive pairs are **chords**: potential _diagonal_ connections through the
 single point `v`. Two chords **conflict** if they interleave in the cyclic order
 (e.g. on a square lattice, chord `c0–c2` conflicts with chord `c1–c3`).
 
 Bridges supports four `crossingMode` settings:
 
-| Mode | Behaviour |
-|---|---|
-| `strict` | Diagonals never connect. Simple, but 2‑player games on pinched tilings *can* be drawn. |
-| `bridge` **(default)** | Diagonals connect, but the set of live chords at each vertex must stay **non‑crossing**. When a new claim would create a chord conflicting with an existing live chord, the **older** chord wins and bridges *over*; the newer one is severed at `v`. |
-| `open` | All diagonals connect for everyone. Fast and chaotic; multiple players can win simultaneously (see `simultaneousWin`). |
-| `priority` | Conflicts resolved by fixed player order rather than timestamp. Deterministic but unfair; useful for study. |
+| Mode                   | Behaviour                                                                                                                                                                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `strict`               | Diagonals never connect. Simple, but 2‑player games on pinched tilings _can_ be drawn.                                                                                                                                                                |
+| `bridge` **(default)** | Diagonals connect, but the set of live chords at each vertex must stay **non‑crossing**. When a new claim would create a chord conflicting with an existing live chord, the **older** chord wins and bridges _over_; the newer one is severed at `v`. |
+| `open`                 | All diagonals connect for everyone. Fast and chaotic; multiple players can win simultaneously (see `simultaneousWin`).                                                                                                                                |
+| `priority`             | Conflicts resolved by fixed player order rather than timestamp. Deterministic but unfair; useful for study.                                                                                                                                           |
 
 `bridge` mode is the signature mode. It is:
 
-- **Deterministic** — chord birth time is the move number at which its *second*
+- **Deterministic** — chord birth time is the move number at which its _second_
   endpoint was claimed; ties are impossible.
 - **Local and incremental** — resolving a conflict only inspects one vertex.
 - **Monotone** — a live chord is never revoked, so union‑find remains valid with
@@ -136,42 +136,45 @@ Three players own opposite pairs of a hexagonal outline. Consequences:
 - **Draws are real.** With three colours, a full board can have zero connections.
   Enable a `tiebreak` to avoid anticlimax.
 - **Kingmaking.** The trailing player can decide the winner. Mitigations offered:
-    - `firstToConnect` (default) — the first player to complete a link wins outright.
-    - `scoring` — play to a full board; rank by (connected? , longest chain length,
-      cells owned). Rewards second place, which suppresses spite.
-    - `elimination` — a player who is provably cut off (their two arcs are separated
-      by a completed opposing wall) is eliminated and their cells become neutral
-      walls; last player standing or first to connect wins.
+  - `firstToConnect` (default) — the first player to complete a link wins outright.
+  - `scoring` — play to a full board; rank by (connected? , longest chain length,
+    cells owned). Rewards second place, which suppresses spite.
+  - `elimination` — a player who is provably cut off (their two arcs are separated
+    by a completed opposing wall) is eliminated and their cells become neutral
+    walls; last player standing or first to connect wins.
 - **Balance.** First player advantage is smaller but real; see `pieRule` variants.
 
 ### 2.5 Variants (all toggleable, all serialized in the game config)
 
-| Variant | Description |
-|---|---|
-| `pieRule` (swap) | Player 2 may, as their first action, swap colours instead of moving. The standard Hex fairness fix. |
-| `auction` | 3‑player balance: players bid a handicap in "skipped first turns". |
-| `goal: opposite` | Default. Connect your two arcs. |
-| `goal: fork` | Connect **all** arcs of one parity class (a *Y*‑style goal). On a triangular outline with one player class this is the game of **Y**, which is draw‑free on any clean tiling. |
-| `goal: ring` | *Havannah*‑style: enclose at least one cell (yours or not) in a closed loop. |
-| `goal: any` | Win by fork **or** ring **or** opposite — the Havannah cocktail. |
-| `misère` | Whoever completes a connection **loses**. Surprisingly playable. |
-| `neutralCells` | A seeded percentage of cells start blocked (rendered as rock/water). Adds asymmetric puzzle scenarios. |
-| `handicap: n` | Player 2 (or 2 and 3) pre‑place `n` cells. |
-| `blitz` | Per‑move / total clocks with Fischer increment. |
-| `simultaneousWin` | Only meaningful in `open` crossing mode: shared victory allowed. |
+| Variant           | Description                                                                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pieRule` (swap)  | Player 2 may, as their first action, swap colours instead of moving. The standard Hex fairness fix.                                                                           |
+| `auction`         | 3‑player balance: players bid a handicap in "skipped first turns".                                                                                                            |
+| `goal: opposite`  | Default. Connect your two arcs.                                                                                                                                               |
+| `goal: fork`      | Connect **all** arcs of one parity class (a _Y_‑style goal). On a triangular outline with one player class this is the game of **Y**, which is draw‑free on any clean tiling. |
+| `goal: ring`      | _Havannah_‑style: enclose at least one cell (yours or not) in a closed loop.                                                                                                  |
+| `goal: any`       | Win by fork **or** ring **or** opposite — the Havannah cocktail.                                                                                                              |
+| `misère`          | Whoever completes a connection **loses**. Surprisingly playable.                                                                                                              |
+| `neutralCells`    | A seeded percentage of cells start blocked (rendered as rock/water). Adds asymmetric puzzle scenarios.                                                                        |
+| `handicap: n`     | Player 2 (or 2 and 3) pre‑place `n` cells.                                                                                                                                    |
+| `blitz`           | Per‑move / total clocks with Fischer increment.                                                                                                                               |
+| `simultaneousWin` | Only meaningful in `open` crossing mode: shared victory allowed.                                                                                                              |
+
 ### 2.6 Go (`goal: go`) — an alternate objective
+
 The same board graph hosts a territory game. With `goal: go`:
+
 - **Liberties** are edge‑adjacent empty cells; chords/crossing modes are ignored,
-   so every tiling (clean or pinched) is a legal Go board.
+  so every tiling (clean or pinched) is a legal Go board.
 - **Capture**: a group with no liberties is removed, whoever surrounds it
-   (works for 3 colours). Suicide is illegal. **Simple ko**: a lone stone that
-   captured exactly one stone may not be retaken at once.
+  (works for 3 colours). Suicide is illegal. **Simple ko**: a lone stone that
+  captured exactly one stone may not be retaken at once.
 - **Passing** is allowed; the game ends when every colour has passed in turn.
 - **Area scoring**: stones + empty regions bordered by exactly one colour.
-   Largest area wins, ties draw. Dead stones are not removed — play them out.
+  Largest area wins, ties draw. Dead stones are not removed — play them out.
 - Moves are still the truth: `PASS` is a move‑list marker (encoded `4094`),
-   undo is replay, links are shared as usual. Bots get a dedicated Go search
-   (`ai/go.js`): eye‑aware random / heuristic / flat Monte‑Carlo.
+  undo is replay, links are shared as usual. Bots get a dedicated Go search
+  (`ai/go.js`): eye‑aware random / heuristic / flat Monte‑Carlo.
 
 ---
 
@@ -179,14 +182,14 @@ The same board graph hosts a territory game. With `goal: go`:
 
 ### 3.1 Outlines
 
-| Outline | Sides | Players | Notes |
-|---|---|---|---|
-| `rhombus` | 4 | 2 | Classic Hex geometry; the diagonal is the natural axis. |
-| `square` | 4 | 2 | Nicest with square/4.8.8 tilings. |
-| `hexagon` | 6 | 3 (or 2, owning two arcs each and ignoring one pair) | The 3‑player board. |
-| `triangle` | 3 | 1–3 with `goal: fork` | The *Y* board. |
-| `dodecagon` | 12 | 2, 3, 4, 6 | Experimental many‑arc boards. |
-| `disc` | ∞ | any | Arcs are angular sectors; needs `sectors: n`. Wonderfully weird. |
+| Outline     | Sides | Players                                              | Notes                                                            |
+| ----------- | ----- | ---------------------------------------------------- | ---------------------------------------------------------------- |
+| `rhombus`   | 4     | 2                                                    | Classic Hex geometry; the diagonal is the natural axis.          |
+| `square`    | 4     | 2                                                    | Nicest with square/4.8.8 tilings.                                |
+| `hexagon`   | 6     | 3 (or 2, owning two arcs each and ignoring one pair) | The 3‑player board.                                              |
+| `triangle`  | 3     | 1–3 with `goal: fork`                                | The _Y_ board.                                                   |
+| `dodecagon` | 12    | 2, 3, 4, 6                                           | Experimental many‑arc boards.                                    |
+| `disc`      | ∞     | any                                                  | Arcs are angular sectors; needs `sectors: n`. Wonderfully weird. |
 
 ### 3.2 Edge treatment
 
@@ -210,7 +213,7 @@ same `size` feel comparable in length‑of‑game.
 same as playing on the **faces of its dual**, which is how you get:
 
 - vertices of triangular tiling = faces of hexagonal = Hex,
-- vertices of square tiling = *Gale/Bridg‑It* territory,
+- vertices of square tiling = _Gale/Bridg‑It_ territory,
 - vertices of kagome, 4.8.8, etc. = a fresh family of boards for free.
 
 Implementation: `dualize(board)` returns a new board; everything downstream is
@@ -237,7 +240,7 @@ unchanged. One function, double the content.
 
 ### 4.2 File layout
 
-~~~text
+```text
 games/bridges/
   index.html                 # import map, canvas, HUD skeleton, no-JS fallback
   idea.md                    # this document
@@ -321,45 +324,48 @@ games/bridges/
     connectivity.test.js     # union-find vs brute-force BFS, fuzzed
     nodraw.test.js           # fill random boards, assert exactly one winner (clean)
     serialize.test.js        # round-trip config + moves, URL length budget
-~~~
+```
 
 ### 4.3 The tiling interface
 
 Every tiling module is small and declarative. It describes a **prototile patch**
 plus **lattice vectors**; the generic generator does the rest.
 
-~~~js
+```js
 // tilings/hex.js
 export default {
   id: 'hex',
   name: 'Hexagonal',
   vertexConfig: '6.6.6',
-  clean: true,                    // all vertices degree 3 -> draw-free
+  clean: true, // all vertices degree 3 -> draw-free
   tags: ['classic', 'regular'],
   // lattice translations, in tile-radius units
-  basis: [ [1.5, HALF_SQRT3], [1.5, -HALF_SQRT3] ],
+  basis: [
+    [1.5, HALF_SQRT3],
+    [1.5, -HALF_SQRT3],
+  ],
   // one or more prototiles per lattice cell, each a closed polygon
-  protoTiles: [ { kind: 'hex', poly: hexPoly(1) } ],
+  protoTiles: [{ kind: 'hex', poly: hexPoly(1) }],
   defaultOutline: 'rhombus',
   // how `size` maps to lattice extent for this tiling
-  extent: size => ({ i: size, j: size }),
+  extent: (size) => ({ i: size, j: size }),
 };
-~~~
+```
 
-~~~js
+```js
 // tilings/Tiling.js  (excerpt)
 export function generateBoard(tiling, { outline, size, edgeMode, seed }) {
-  const region = makeOutline(outline, tiling, size);        // geometry/outline.js
-  const raw    = stampLattice(tiling, region.bbox);          // prototiles x basis
-  const kept   = applyEdgeMode(raw, region, edgeMode);       // whole|centroid|clip
-  const topo   = weld(kept, { epsilon: 1e-6 });              // vertices + edges
-  const board  = new Board(topo);
-  board.arcs   = assignArcs(board, region);                  // boundary -> side ids
-  board.chords = buildChords(board);                         // per-vertex chord sets
-  board.hash   = new SpatialHash(board.cells);
+  const region = makeOutline(outline, tiling, size); // geometry/outline.js
+  const raw = stampLattice(tiling, region.bbox); // prototiles x basis
+  const kept = applyEdgeMode(raw, region, edgeMode); // whole|centroid|clip
+  const topo = weld(kept, { epsilon: 1e-6 }); // vertices + edges
+  const board = new Board(topo);
+  board.arcs = assignArcs(board, region); // boundary -> side ids
+  board.chords = buildChords(board); // per-vertex chord sets
+  board.hash = new SpatialHash(board.cells);
   return board;
 }
-~~~
+```
 
 Aperiodic tilings (Penrose) and `voronoi.js` bypass `stampLattice` with their own
 generator but return the same polygon soup, so `weld` onward is shared.
@@ -391,7 +397,7 @@ generator but return the same polygon soup, so `weld` onward is shared.
 Incremental disjoint‑set union, one forest per player, plus `S` **sentinel nodes**
 (one per border arc):
 
-~~~js
+```js
 claim(cellId, player) {
   const ds = this.sets[player];
   for (const n of board.neighbors(cellId))
@@ -402,12 +408,12 @@ claim(cellId, player) {
     ds.union(cellId, SENTINEL(arc));
   return Goals.check(player, ds, board);         // O(1) for `opposite`
 }
-~~~
+```
 
 `Goals.check` for `opposite` is a single `find` comparison of the player's two
 sentinels. `fork` compares all owned sentinels. `ring` needs a small local
-boundary‑walk around the just‑placed cell, still O(local). Undo is *replay from
-the move list* — simpler and less bug‑prone than persistent union‑find, and
+boundary‑walk around the just‑placed cell, still O(local). Undo is _replay from
+the move list_ — simpler and less bug‑prone than persistent union‑find, and
 boards are small enough that replaying 200 moves is microseconds.
 
 ---
@@ -436,7 +442,7 @@ For congruent‑tile tilings the renderer opportunistically switches to
 
 ### 5.2 Animation, in the shader
 
-~~~glsl
+```glsl
 float t = clamp((uTime - aClaimTime) / 0.45, 0.0, 1.0);
 float ease = 1.0 - pow(1.0 - t, 3.0);
 // claimed cells rise and settle with a tiny overshoot
@@ -444,7 +450,7 @@ pos.y += aOwner > 0.0 ? ease * uRise + sin(t * 9.4) * (1.0 - t) * 0.03 : 0.0;
 // a ripple races outward from the claim across neighbours
 float d = distance(aCellCenter, uLastClaimCenter);
 pos.y += ripple(uTime - uLastClaimTime - d * 0.06) * 0.05;
-~~~
+```
 
 Everything expensive is GPU‑side and free of per‑frame JS.
 
@@ -455,7 +461,7 @@ When the Bridge Rule fires at a vertex:
 - the **winning** chord spawns a `TubeGeometry` along a `CatmullRomCurve3`
   arcing from centroid → above the vertex → centroid: a little stone/iron
   overpass, with a satisfying clank from `Sound.js`;
-- the **losing** chord gets a *severance decal* — the two cells stay coloured but
+- the **losing** chord gets a _severance decal_ — the two cells stay coloured but
   a visible gap and cast shadow under the arch show the path is cut;
 - hovering the vertex shows a tooltip: "claimed move 34 — bridges over move 41".
 
@@ -472,7 +478,7 @@ disproportionate polish.
 - **Post‑processing.** `EffectComposer` with SMAA → SSAO (quality tier ≥ high) →
   `UnrealBloomPass` (victory chains bloom) → optional `OutlinePass` for hints.
 - **Board frame.** The outline is drawn as a beveled wooden/metal rail, with each
-  arc tinted by its owner — so "which sides are mine" is answered by *looking*,
+  arc tinted by its owner — so "which sides are mine" is answered by _looking_,
   never by reading. Corner arcs blend both colours.
 - **Victory.** The winning chain lights from arc to arc like a fuse, the camera
   performs a slow orbit, losers' cells desaturate, bloom spikes, confetti of
@@ -507,7 +513,7 @@ disabling ripples, camera drift, and confetti.
   thumbnail generated from the real generator), outline, size slider, player
   count, variant toggles, and a "clean / pinched" badge with a one‑line
   explanation of what the crossing rule does.
-- **Turn HUD**: whose turn, colour, optional clocks, and a *connection meter* per
+- **Turn HUD**: whose turn, colour, optional clocks, and a _connection meter_ per
   player — an honest progress indicator (shortest remaining path cost via
   Dijkstra over "empty = 1, mine = 0, theirs = ∞").
 - **Hints** (toggle, off in ranked): highlight legal cells, show your virtual
@@ -544,7 +550,7 @@ All AI runs in a **Web Worker** over the pure engine, so the UI never stutters.
 2. **`medium`** — the classic Hex **electrical resistance** evaluation: model the
    board as a resistor network (own cells = 0 Ω, empty = 1 Ω, enemy = ∞) between
    your two arc sentinels; score = `log(R_opponent / R_self)`. Pick the move
-   maximizing it. This generalizes to *any* tiling for free — it only needs the
+   maximizing it. This generalizes to _any_ tiling for free — it only needs the
    adjacency graph — which is exactly why it's the right choice here.
 3. **`hard`** — MCTS with UCT + RAVE, cheap biased playouts, plus a
    **virtual‑connection** layer from `patterns.js` (bridge/edge templates,
@@ -555,7 +561,7 @@ All AI runs in a **Web Worker** over the pure engine, so the UI never stutters.
    doesn't behave absurdly when it cannot win.
 5. **Difficulty by budget**, not by handicap: same algorithm, fewer milliseconds.
 
-Pattern templates are tiling‑dependent, so `patterns.js` *learns* them at board
+Pattern templates are tiling‑dependent, so `patterns.js` _learns_ them at board
 generation time by brute‑forcing small local shapes (radius ≤ 2) once and caching
 by tiling id — a neat trick that keeps the AI strong across arbitrary boards.
 
@@ -563,7 +569,7 @@ by tiling id — a neat trick that keeps the AI strong across arbitrary boards.
 
 ## 8. Data model (sketch)
 
-~~~js
+```js
 // Board (immutable after generation)
 Cell   = { id, poly: Float32Array, centroid: [x,y], area,
            neighbors: Int32Array, vertices: Int32Array, arcs: number[] }
@@ -582,11 +588,12 @@ State  = { owner: Int8Array,        // -1 empty, 0..P-1 player
 Config = { version, tiling, playOn, outline, size, edgeMode, players,
            crossingMode, goal, variants:[], seed, theme }
 Save   = { config, moves: Int32Array, meta: { started, names, result } }
-~~~
+```
 
 ---
 
 ## 9. Roadmap
+
 > **Status:** M0–M2 plus parts of M3, M5 and M6 are implemented (see `src/`
 > and `tests/`): triangle (default) / hex / square / 4.8.8 / kagome / 3.4.6.4 /
 > snub square / 3.12.12 / 4.6.12 / Cairo / brick tilings, rhombus/square/hexagon
@@ -602,7 +609,6 @@ Save   = { config, moves: Int32Array, meta: { started, names, result } }
 > `goal: go` turns any board into a Go board (captures, ko, passing, area
 > scoring, 2–3 colours) with its own bot search.
 > `priority` crossing mode, dual play, MCTS+RAVE, tiebreaks and a11y are still open.
-
 
 **M0 — Skeleton (playable Hex).**
 `hex` tiling, `rhombus` outline, 2 players, union‑find win check, flat three.js
@@ -648,10 +654,10 @@ PWA/offline, optional WebRTC peer play, tutorial with interactive puzzles.
    on the square lattice? Needs a proof or a counterexample search. (Brute force
    all fillings of small boards — a good `nodraw.test.js` extension.)
 2. **Degree ≥ 5 vertices** (triangular, snub) — is timestamp resolution even the
-   right primitive, or should chords be *bid* for? Prototype `strict` vs `bridge`
+   right primitive, or should chords be _bid_ for? Prototype `strict` vs `bridge`
    playability there before committing.
 3. **First‑player advantage across tilings.** The pie rule fixes 2‑player, but
-   how *big* is the advantage on, say, kagome vs. hex? Measure with bot self‑play
+   how _big_ is the advantage on, say, kagome vs. hex? Measure with bot self‑play
    and surface it in the setup UI as a "balance" rating.
 4. **Fair 3‑player start.** Is `auction` genuinely better than a fixed handicap?
    Playtest.
@@ -660,7 +666,7 @@ PWA/offline, optional WebRTC peer play, tutorial with interactive puzzles.
 6. **Is `clip` edge mode worth it?** Sliver cells are ugly and strategically
    weird; maybe `centroid` plus a decorative frame is simply better.
 7. **Naming the pieces.** "Claim a cell" or "place a stone"? Bridges' physicality
-   suggests *tiles* being *laid* — decide once, use everywhere, including in the
+   suggests _tiles_ being _laid_ — decide once, use everywhere, including in the
    a11y announcements.
 
 ---
@@ -674,6 +680,6 @@ PWA/offline, optional WebRTC peer play, tutorial with interactive puzzles.
   tilings.
 - **Havannah** — Christian Freeling; the ring/fork/bridge goal cocktail.
 - **Chameleon / 3‑player Hex** — precedent for the hexagonal 3‑player board.
-- **Grünbaum & Shephard, *Tilings and Patterns*** — the tiling taxonomy and
+- **Grünbaum & Shephard, _Tilings and Patterns_** — the tiling taxonomy and
   vertex‑configuration notation used in `tilings/`.
 - **three.js** — the eye candy.

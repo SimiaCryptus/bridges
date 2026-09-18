@@ -35,8 +35,8 @@ export class Game {
     this.owner = this.go ? this.go.owner : new Int8Array(n).fill(-1);
     this.claimTime = new Int32Array(n).fill(-1);
     this.moves = [];
-    this.claims = 0;   // stones placed
-    this.plies = 0;    // turns taken (placements + passes)
+    this.claims = 0; // stones placed
+    this.plies = 0; // turns taken (placements + passes)
     this.swapped = false;
     this.winner = -1;
     this.phase = 'playing'; // playing | won | draw | timeout
@@ -55,21 +55,43 @@ export class Game {
       if (i >= 0) list.splice(i, 1);
     };
   }
-  emit(event, payload) { for (const fn of this._listeners.get(event) ?? []) fn(payload); }
+  emit(event, payload) {
+    for (const fn of this._listeners.get(event) ?? []) fn(payload);
+  }
 
   /** Colour whose turn it is. */
-  get turn() { return this.plies % this.players; }
+  get turn() {
+    return this.plies % this.players;
+  }
   /** Seat (human) controlling a colour — differs only after a pie-rule swap. */
-  seatOf(colour) { return this.swapped && this.players === 2 ? 1 - colour : colour; }
-  colourOf(seat) { return this.seatOf(seat); }
+  seatOf(colour) {
+    return this.swapped && this.players === 2 ? 1 - colour : colour;
+  }
+  colourOf(seat) {
+    return this.seatOf(seat);
+  }
 
   canSwap() {
-    return this.pie && this.phase === 'playing' && this.players === 2 &&
-           this.plies === 1 && this.claims === 1 && !this.swapped;
+    return (
+      this.pie &&
+      this.phase === 'playing' &&
+      this.players === 2 &&
+      this.plies === 1 &&
+      this.claims === 1 &&
+      !this.swapped
+    );
   }
-  canPass() { return this.rules === 'go' && this.phase === 'playing'; }
+  canPass() {
+    return this.rules === 'go' && this.phase === 'playing';
+  }
   isLegal(cell) {
-    if (this.phase !== 'playing' || !Number.isInteger(cell) || cell < 0 || cell >= this.owner.length) return false;
+    if (
+      this.phase !== 'playing' ||
+      !Number.isInteger(cell) ||
+      cell < 0 ||
+      cell >= this.owner.length
+    )
+      return false;
     return this.go ? this.go.isLegal(cell, this.turn) : this.owner[cell] === -1;
   }
   legalCells() {
@@ -85,7 +107,10 @@ export class Game {
     this._swap();
     this.emit('move', { swap: true });
   }
-  _swap() { this.swapped = true; this.moves.push(SWAP); }
+  _swap() {
+    this.swapped = true;
+    this.moves.push(SWAP);
+  }
 
   pass() {
     if (!this.canPass()) throw new Error('pass not allowed now');
@@ -111,7 +136,9 @@ export class Game {
     return result;
   }
 
-  _apply(cell) { return this.go ? this._applyGo(cell) : this._applyConnect(cell); }
+  _apply(cell) {
+    return this.go ? this._applyGo(cell) : this._applyConnect(cell);
+  }
 
   _applyConnect(cell) {
     const player = this.turn;
@@ -128,16 +155,17 @@ export class Game {
       if (this.owner[nb] === player) links.push([cell, nb, player]);
     }
     for (const [a, b] of unions) links.push([a, b, player]);
-    const bridges = severed.map(s => ({
-      ...s, moveNumber,
-      owner: this.owner[this.board.chords[s.over].a],   // who bridges over
-      underOwner: player,                                // who got cut
+    const bridges = severed.map((s) => ({
+      ...s,
+      moveNumber,
+      owner: this.owner[this.board.chords[s.over].a], // who bridges over
+      underOwner: player, // who got cut
     }));
     this.bridges.push(...bridges);
     if (checkGoal(this.config.goal, player, this)) {
       this.winner = player;
       this.phase = 'won';
-      const arc = this.board.arcs.find(a => a.owner === player);
+      const arc = this.board.arcs.find((a) => a.owner === player);
       this.winningCells = this.conn.chain(player, arc.id, this.owner);
     } else if (this.claims === this.owner.length) {
       this.phase = 'draw';
@@ -163,16 +191,26 @@ export class Game {
   /** Every colour passed in turn: score the board. */
   _finishGo() {
     const { area } = this.go.score();
-    let winner = -1, best = -1, tie = false;
+    let winner = -1,
+      best = -1,
+      tie = false;
     for (let p = 0; p < this.players; p++) {
-      if (area[p] > best) { best = area[p]; winner = p; tie = false; }
-      else if (area[p] === best) tie = true;
+      if (area[p] > best) {
+        best = area[p];
+        winner = p;
+        tie = false;
+      } else if (area[p] === best) tie = true;
     }
-    if (tie) { this.phase = 'draw'; this.winner = -1; return; }
+    if (tie) {
+      this.phase = 'draw';
+      this.winner = -1;
+      return;
+    }
     this.phase = 'won';
     this.winner = winner;
     this.winningCells = [];
-    for (let i = 0; i < this.owner.length; i++) if (this.owner[i] === winner) this.winningCells.push(i);
+    for (let i = 0; i < this.owner.length; i++)
+      if (this.owner[i] === winner) this.winningCells.push(i);
   }
 
   /**
@@ -187,8 +225,8 @@ export class Game {
     for (let p = 0; p < this.players; p++) {
       const ds = this.conn.sets[p];
       const roots = this.board.arcs
-        .filter(a => a.owner === p)
-        .map(a => ds.find(this.conn.sentinel(a.id)));
+        .filter((a) => a.owner === p)
+        .map((a) => ds.find(this.conn.sentinel(a.id)));
       if (!roots.length) continue;
       for (let i = 0; i < n; i++) {
         if (this.owner[i] !== p) continue;
@@ -230,17 +268,23 @@ export class Game {
     const loser = this.flagged;
     const score = this.go ? this.go.score() : null;
     // connect: fewest cells still needed wins; go: largest area wins
-    const standing = p => (score ? score.area[p] : -connectionDistance(this.board, this.owner, p));
-    let winner = -1, best = -Infinity;
+    const standing = (p) =>
+      score ? score.area[p] : -connectionDistance(this.board, this.owner, p);
+    let winner = -1,
+      best = -Infinity;
     for (let p = 0; p < this.players; p++) {
       if (p === loser) continue;
       const v = standing(p);
-      if (winner < 0 || v > best) { winner = p; best = v; }
+      if (winner < 0 || v > best) {
+        winner = p;
+        best = v;
+      }
     }
     this.winner = winner;
     this.phase = 'timeout';
     this.winningCells = [];
-    for (let i = 0; i < this.owner.length; i++) if (this.owner[i] === winner) this.winningCells.push(i);
+    for (let i = 0; i < this.owner.length; i++)
+      if (this.owner[i] === winner) this.winningCells.push(i);
   }
 
   undo() {
@@ -249,15 +293,20 @@ export class Game {
     return true;
   }
 
-  reset() { this._init(); this.emit('sync'); }
+  reset() {
+    this._init();
+    this.emit('sync');
+  }
 
   /** Rebuild from scratch; illegal entries are skipped silently. Emits `sync`. */
   replay(moves) {
     this._init();
     for (const m of moves) {
-      if (m === SWAP) { if (this.canSwap()) this._swap(); }
-      else if (m === PASS) { if (this.canPass()) this._pass(); }
-      else if (this.isLegal(m)) this._apply(m);
+      if (m === SWAP) {
+        if (this.canSwap()) this._swap();
+      } else if (m === PASS) {
+        if (this.canPass()) this._pass();
+      } else if (this.isLegal(m)) this._apply(m);
     }
     if (this.flagged >= 0 && this.phase === 'playing') this._applyTimeout();
     this.emit('sync');

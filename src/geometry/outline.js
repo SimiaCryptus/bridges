@@ -21,13 +21,18 @@ export function makeOutline(kind, tiling, size) {
       break;
     case 'square': {
       const h = span / 2;
-      poly = [[-h, -h], [h, -h], [h, h], [-h, h]].map(p => [p[0] + center[0], p[1] + center[1]]);
+      poly = [
+        [-h, -h],
+        [h, -h],
+        [h, h],
+        [-h, h],
+      ].map((p) => [p[0] + center[0], p[1] + center[1]]);
       break;
     }
     case 'hexagon': {
       const R = span / Math.sqrt(3); // inradius = span / 2
-      poly = [0, 1, 2, 3, 4, 5].map(k => {
-        const a = Math.PI / 3 * k;
+      poly = [0, 1, 2, 3, 4, 5].map((k) => {
+        const a = (Math.PI / 3) * k;
         return [center[0] + R * Math.cos(a), center[1] + R * Math.sin(a)];
       });
       break;

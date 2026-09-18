@@ -8,10 +8,25 @@ export default {
   vertexConfig: 'running bond',
   clean: true,
   tags: ['clean'],
-  basis: [[2, 0], [1, 1]],
-  protoTiles: [{ kind: 'brick', poly: [[-1, -0.5], [0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5], [-1, 0.5]] }],
+  basis: [
+    [2, 0],
+    [1, 1],
+  ],
+  protoTiles: [
+    {
+      kind: 'brick',
+      poly: [
+        [-1, -0.5],
+        [0, -0.5],
+        [1, -0.5],
+        [1, 0.5],
+        [0, 0.5],
+        [-1, 0.5],
+      ],
+    },
+  ],
   latticeOffset: [-0.5, -0.5],
   cellWidth: 1.3,
   defaultOutline: 'square',
-  extent: size => ({ i: Math.ceil(size * 0.65), j: size }),
+  extent: (size) => ({ i: Math.ceil(size * 0.65), j: size }),
 };

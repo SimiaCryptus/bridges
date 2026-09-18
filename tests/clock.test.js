@@ -10,11 +10,11 @@ test('clock charges the active seat and pays the Fischer increment', () => {
   let t = 0;
   const clock = new Clock(2, 60, 5, () => t);
   assert.equal(clock.active, -1);
-  clock.switchTo(0);                 // first move made: seat 0's clock starts
+  clock.switchTo(0); // first move made: seat 0's clock starts
   t = 10;
   assert.equal(clock.tick(), -1);
   assert.equal(clock.remainingOf(0), 50);
-  clock.switchTo(1, 0);              // seat 0 moved: +5, seat 1 now running
+  clock.switchTo(1, 0); // seat 0 moved: +5, seat 1 now running
   assert.equal(clock.remainingOf(0), 55);
   t = 40;
   assert.equal(clock.remainingOf(1), 30);
@@ -40,8 +40,11 @@ test('timeout ends the game for the other player and survives undo', () => {
   const cfg = normalize({ tiling: 'hex', outline: 'rhombus', size: 4 }, tilingIds);
   const game = new Game(generateBoard(tilings.hex, cfg), cfg);
   let ended = null;
-  game.on('end', e => { ended = e; });
-  game.play(0); game.play(1);
+  game.on('end', (e) => {
+    ended = e;
+  });
+  game.play(0);
+  game.play(1);
   assert.ok(game.timeout(0));
   assert.equal(game.phase, 'timeout');
   assert.equal(game.winner, 1);

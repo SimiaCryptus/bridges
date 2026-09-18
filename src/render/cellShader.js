@@ -1,6 +1,6 @@
 // All claim/ripple/hover animation lives on the GPU; JS only pokes attributes.
 
-export const vertexShader = /* glsl */`
+export const vertexShader = /* glsl */ `
   attribute float aOwner;
   attribute float aClaimTime;
   attribute float aCellId;
@@ -54,7 +54,7 @@ export const vertexShader = /* glsl */`
   }
 `;
 
-export const fragmentShader = /* glsl */`
+export const fragmentShader = /* glsl */ `
   precision highp float;
   uniform vec3  uPalette[4];   // 0 = empty, 1..3 = players
   uniform vec3  uLightDir;

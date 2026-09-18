@@ -3,17 +3,17 @@ import { cleanPolygon, ensureCCW } from './Polygon.js';
 /**
  * Turn a polygon soup into topology: shared vertex table + edge table.
  * An edge with two incident cells makes them adjacent; one cell = boundary.
-  * Every polygon is normalised to CCW so downstream (renderer walls, insets)
-  * never has to care how a tiling module happened to list its vertices.
+ * Every polygon is normalised to CCW so downstream (renderer walls, insets)
+ * never has to care how a tiling module happened to list its vertices.
  */
 export function weld(polys, { epsilon = 1e-6 } = {}) {
   const vmap = new Map();
   const vertices = [];
-  const key = p => `${Math.round(p[0] / epsilon)},${Math.round(p[1] / epsilon)}`;
+  const key = (p) => `${Math.round(p[0] / epsilon)},${Math.round(p[1] / epsilon)}`;
   const cells = [];
 
   for (const src of polys) {
-     const clean = ensureCCW(cleanPolygon(src.poly, epsilon * 10));
+    const clean = ensureCCW(cleanPolygon(src.poly, epsilon * 10));
     if (clean.length < 3) continue;
     const vids = [];
     for (const p of clean) {
@@ -28,7 +28,12 @@ export function weld(polys, { epsilon = 1e-6 } = {}) {
     }
     if (vids.length > 1 && vids[0] === vids[vids.length - 1]) vids.pop();
     if (vids.length < 3) continue;
-    cells.push({ id: cells.length, kind: src.kind, vertices: vids, poly: vids.map(v => vertices[v].p) });
+    cells.push({
+      id: cells.length,
+      kind: src.kind,
+      vertices: vids,
+      poly: vids.map((v) => vertices[v].p),
+    });
   }
 
   const emap = new Map();
@@ -36,11 +41,17 @@ export function weld(polys, { epsilon = 1e-6 } = {}) {
   for (const c of cells) {
     const n = c.vertices.length;
     for (let i = 0; i < n; i++) {
-      const a = c.vertices[i], b = c.vertices[(i + 1) % n];
-      const lo = Math.min(a, b), hi = Math.max(a, b);
+      const a = c.vertices[i],
+        b = c.vertices[(i + 1) % n];
+      const lo = Math.min(a, b),
+        hi = Math.max(a, b);
       const k = `${lo},${hi}`;
       let e = emap.get(k);
-      if (!e) { e = { a: lo, b: hi, cells: [] }; emap.set(k, e); edges.push(e); }
+      if (!e) {
+        e = { a: lo, b: hi, cells: [] };
+        emap.set(k, e);
+        edges.push(e);
+      }
       e.cells.push(c.id);
     }
   }

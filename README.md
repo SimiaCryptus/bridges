@@ -2,7 +2,7 @@
 
 ## What is this?
 
-Bridges is a connection game — the same family as the classic game *Hex* —
+Bridges is a connection game — the same family as the classic game _Hex_ —
 but played on a board you get to choose. Instead of one fixed grid of
 hexagons, you can play on squares, triangles, kagome lattices, pentagons,
 organic hand-drawn-looking cells, and more, with two or three players,
@@ -17,13 +17,13 @@ survive.
 ## A little background
 
 Hex was invented independently by Piet Hein in 1942 and by John Nash (yes,
-*that* Nash) in 1948. It's one of the most elegant games ever designed:
+_that_ Nash) in 1948. It's one of the most elegant games ever designed:
 the rules fit in two sentences, there are no draws — the board always ends
 up connected for exactly one player — and yet it takes a lifetime to play
 well.
 
 Hex is normally locked to one specific board shape: a rhombus of hexagonal
-cells. Bridges asks a simple question — what actually *makes* Hex work, and
+cells. Bridges asks a simple question — what actually _makes_ Hex work, and
 does it require hexagons? It turns out the honest answer is "no." Hex is
 really a game about a network of cells and a boundary split into sides
 belonging to each player. Hexagons are just one convenient way to build
@@ -33,7 +33,7 @@ tiling and the shape of the board.
 Along the way, changing the tiling introduces a wrinkle: on some patterns
 (like plain squares), two diagonal connections can cross at a single point,
 which never happens on a hexagon grid. Bridges solves this the way Gale's
-old game *Bridg-It* did — literally, with a bridge. When two claims would
+old game _Bridg-It_ did — literally, with a bridge. When two claims would
 cross, the earlier one arches gracefully over the later one, which is
 severed at that point. This isn't just a rule footnote — it's rendered as
 an actual little arched overpass on the board, with the cut-off path
@@ -97,7 +97,9 @@ how long it is allowed to think, not a handicap), and games can be played
 on a Fischer clock (main time plus an increment per move; untimed by
 default). Drag to orbit the board, right‑drag or shift‑drag to pan, and
 scroll or pinch to zoom; `R` resets the view and `T` looks straight down.
+
 ## Go on any tiling
+
 Set the **goal** to `go` in the settings and the same board becomes a Go
 board: place stones, capture groups that run out of liberties (liberties run
 along shared edges, so the crossing rule doesn't apply), no suicide, simple

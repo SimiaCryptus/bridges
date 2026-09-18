@@ -14,14 +14,20 @@ const now = () => (typeof performance !== 'undefined' ? performance.now() : Date
 const MAX_CANDIDATES = 160;
 const SHORTLIST = 12;
 
-export const rng = seed => {
-  let s = (seed >>> 0) || 1;
-  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 2 ** 32; };
+export const rng = (seed) => {
+  let s = seed >>> 0 || 1;
+  return () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 2 ** 32;
+  };
 };
 const pick = (list, rand) => list[Math.floor(rand() * list.length)];
 const shuffle = (list, rand) => {
   const a = list.slice();
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
   return a;
 };
 
@@ -33,7 +39,7 @@ export function chooseMove(game, { level = 'medium', budgetMs = 300, seed = 1 } 
   const { board } = game;
   const me = game.turn;
   if (game.canSwap() && shouldSwap(board, game.moves[0])) return SWAP;
-   if (game.rules === 'go') return chooseGoMove(game, { level, budgetMs, rand });
+  if (game.rules === 'go') return chooseGoMove(game, { level, budgetMs, rand });
 
   const ev = new Evaluator(board, game.config.crossingMode, game.players);
   const owner = game.owner.slice();
@@ -54,7 +60,7 @@ export function chooseMove(game, { level = 'medium', budgetMs = 300, seed = 1 } 
   let list = cand.size ? [...cand] : legal;
   if (list.length > MAX_CANDIDATES) list = shuffle(list, rand).slice(0, MAX_CANDIDATES);
 
-  const scored = list.map(c => {
+  const scored = list.map((c) => {
     owner[c] = me;
     const s = ev.score(owner, me) + rand() * 0.5;
     owner[c] = -1;
@@ -65,8 +71,9 @@ export function chooseMove(game, { level = 'medium', budgetMs = 300, seed = 1 } 
 
   // hard: flat Monte Carlo over the greedy shortlist, with the greedy rank as a prior
   const K = Math.min(scored.length, SHORTLIST);
-  const cands = scored.slice(0, K).map(x => ({ ...x, w: 0, n: 0 }));
-  const sMin = cands[K - 1].s, sMax = cands[0].s;
+  const cands = scored.slice(0, K).map((x) => ({ ...x, w: 0, n: 0 }));
+  const sMin = cands[K - 1].s,
+    sMax = cands[0].s;
   const pos = new Position(game);
   const deadline = now() + budgetMs;
   for (let i = 0; now() < deadline && i < 40000; i++) {
@@ -74,18 +81,22 @@ export function chooseMove(game, { level = 'medium', budgetMs = 300, seed = 1 } 
     cand.w += pos.playout(cand.c, me, rand);
     cand.n++;
   }
-  let best = cands[0], bestV = -Infinity;
+  let best = cands[0],
+    bestV = -Infinity;
   for (const cand of cands) {
     const prior = sMax > sMin ? (cand.s - sMin) / (sMax - sMin) : 0.5;
     const v = (cand.w + 2 * prior) / (cand.n + 2);
-    if (v > bestV) { bestV = v; best = cand; }
+    if (v > bestV) {
+      bestV = v;
+      best = cand;
+    }
   }
   return best.c;
 }
 
 function easyMove(legal, mine, threats, rand) {
   if (mine.d === 1 && mine.cells.length && rand() < 0.9) return pick(mine.cells, rand);
-  const urgent = threats.filter(t => t.d === 1).flatMap(t => t.cells);
+  const urgent = threats.filter((t) => t.d === 1).flatMap((t) => t.cells);
   if (urgent.length && rand() < 0.85) return pick(urgent, rand);
   if (mine.cells.length && rand() < 0.65) return pick(mine.cells, rand);
   return pick(legal, rand);

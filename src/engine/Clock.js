@@ -9,10 +9,10 @@ export class Clock {
     this.main = main;
     this.increment = increment;
     this.remaining = new Float64Array(seats).fill(main);
-    this.active = -1;      // seat whose clock runs; -1 before the first move
+    this.active = -1; // seat whose clock runs; -1 before the first move
     this.last = 0;
     this.running = false;
-    this.flagged = -1;     // seat that ran out of time
+    this.flagged = -1; // seat that ran out of time
   }
 
   /** Run `seat`'s clock; `movedSeat` (who just completed a move) earns the increment. */
@@ -40,7 +40,10 @@ export class Clock {
     return -1;
   }
 
-  stop() { this.tick(); this.running = false; }
+  stop() {
+    this.tick();
+    this.running = false;
+  }
 
   remainingOf(seat) {
     const r = this.remaining[seat];
@@ -53,6 +56,7 @@ export class Clock {
 export function formatClock(seconds) {
   const s = Math.max(0, seconds);
   if (s < 10) return s.toFixed(1);
-  const m = Math.floor(s / 60), r = Math.floor(s - m * 60);
+  const m = Math.floor(s / 60),
+    r = Math.floor(s - m * 60);
   return `${m}:${String(r).padStart(2, '0')}`;
 }

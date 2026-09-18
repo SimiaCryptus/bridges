@@ -17,7 +17,8 @@ export class Position {
     this.chords = new ChordState(this.board, game.config.crossingMode);
     this.conn = new Connectivity(this.board, this.players);
     this.sentinels = Array.from({ length: this.players }, (_, p) =>
-      this.board.arcs.filter(a => a.owner === p).map(a => this.conn.sentinel(a.id)));
+      this.board.arcs.filter((a) => a.owner === p).map((a) => this.conn.sentinel(a.id))
+    );
     this.empty = [];
     this.claims = 0;
     this.move = 0;
@@ -29,7 +30,8 @@ export class Position {
     this.chords.live.set(g.chords.live);
     this.chords.birth.set(g.chords.birth);
     for (let p = 0; p < this.players; p++) {
-      const src = g.conn.sets[p], dst = this.conn.sets[p];
+      const src = g.conn.sets[p],
+        dst = this.conn.sets[p];
       dst.parent.set(src.parent);
       dst.size.set(src.size);
     }
@@ -50,7 +52,7 @@ export class Position {
   _won(p) {
     const s = this.sentinels[p];
     if (s.length < 2) return false;
-    if (this.goal === 'fork') return s.every(x => this.conn.same(p, s[0], x));
+    if (this.goal === 'fork') return s.every((x) => this.conn.same(p, s[0], x));
     return this.conn.same(p, s[0], s[1]);
   }
 
@@ -59,13 +61,17 @@ export class Position {
     this._reset();
     const e = this.empty;
     const k0 = e.indexOf(first);
-    if (k0 >= 0) { e[k0] = e[e.length - 1]; e.pop(); }
+    if (k0 >= 0) {
+      e[k0] = e[e.length - 1];
+      e.pop();
+    }
     if (this._claim(first, me)) return 1;
     let turn = this.claims % this.players;
     while (e.length) {
       const k = Math.floor(rand() * e.length);
       const c = e[k];
-      e[k] = e[e.length - 1]; e.pop();
+      e[k] = e[e.length - 1];
+      e.pop();
       if (this._claim(c, turn)) return turn === me ? 1 : 0;
       turn = (turn + 1) % this.players;
     }

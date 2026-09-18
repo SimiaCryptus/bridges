@@ -23,8 +23,11 @@ export class Bot {
         this.pending.delete(data.id);
         data.error ? p.reject(new Error(data.error)) : p.resolve(data.move);
       };
-      w.onerror = err => {
-        console.warn('[bridges] bot worker unavailable, thinking on the main thread', err?.message ?? err);
+      w.onerror = (err) => {
+        console.warn(
+          '[bridges] bot worker unavailable, thinking on the main thread',
+          err?.message ?? err
+        );
         this.worker = null;
         for (const p of this.pending.values()) p.reject(new Error('worker failed'));
         this.pending.clear();
@@ -42,9 +45,11 @@ export class Bot {
     if (this.worker) {
       try {
         return await this._remote({ config, moves: [...game.moves], level, budgetMs, seed });
-      } catch { /* fall back below */ }
+      } catch {
+        /* fall back below */
+      }
     }
-    await new Promise(r => setTimeout(r, 20)); // let the UI paint the "thinking" state first
+    await new Promise((r) => setTimeout(r, 20)); // let the UI paint the "thinking" state first
     return chooseMove(game, { level, budgetMs: Math.min(budgetMs, 600), seed });
   }
 
